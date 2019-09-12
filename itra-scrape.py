@@ -41,7 +41,11 @@ class ITRAScraper(object):
         for race in soup.select('div.race'):
             name = race.find('h2').text.strip()
             idedition = ref.search(race.find('a').attrs['onclick']).group(1)
-            races.append([idedition, name])
+
+            where, when_info = race.find_all('div')[:2]
+            where = where.text.strip()
+            when = when_info.text.strip()
+            races.append([idedition, name, where, when])
         return races
 
 
@@ -51,8 +55,8 @@ def test(username, password):
     races = itra.search_races('01/01/2019', '11/09/2019', 'UTMB')
     print(races)
 
-    result = itra.get_result('39879')
-    print(result)
+    #result = itra.get_result('39879')
+    #print(result)
 
 
 if __name__ == '__main__':
