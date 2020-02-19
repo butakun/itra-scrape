@@ -19,15 +19,13 @@ class ITRAScraper(object):
         self.session.cookies["MBLogin"] = username
         self.session.cookies["MBPass"] = password
         r = self.session.post("https://itra.run/", data=data)
-        if not r:
-            raise ValueError(r.status_code)
+        r.raise_for_status()
 
     def get_result(self, idedition):
 
         data = {"mode": "getCourse", "idedition": str(idedition)}
         r = self.session.post("https://itra.run/fiche.php", data=data)
-        if not r:
-            raise ValueError(r.status_code)
+        r.raise_for_status()
 
         if self.debug:
             sys.stderr.write(r.text)
@@ -51,8 +49,7 @@ class ITRAScraper(object):
             data["input_cal_rech"] = keyword
 
         r = self.session.post("https://itra.run/results.php", data=data)
-        if not r:
-            raise ValueError(r.status_code)
+        r.raise_for_status()
 
         soup = BeautifulSoup(r.text, features="html.parser")
         races = []
@@ -87,13 +84,13 @@ class ITRAScraper(object):
         }
 
         r = self.session.post("https://itra.run/fiche.php", data=data)
-        if not r:
-            raise ValueError(r.status_code)
+        r.raise_for_status()
 
         if self.debug:
             sys.stderr.write(r.text)
 
-        pat_tit = re.compile("^(.+), born in (.+)")
+        pat_tit_1 = re.compile("^(.+), born in (.+)")
+        pat_tit_2 = re.compile("^(.+)$")
         pat_nat = re.compile("^\((.+)\)")
 
         soup = BeautifulSoup(r.text, features="html.parser")
@@ -104,8 +101,17 @@ class ITRAScraper(object):
             runner = {"id": fc["id"], "data-url": fc["data-url"]}
 
             tit = fc.find("div", class_="tit").get_text()
-            groups = pat_tit.search(tit).groups()
-            sex, birth_year = groups[:2]
+            print(tit)
+            try:
+                groups = pat_tit_1.search(tit).groups()
+                sex, birth_year = groups[:2]
+            except:
+                birth_year = "??"
+                try:
+                    groups = pat_tit_2.search(tit).groups()
+                except:
+                    sex = "??"
+
             runner["sex"] = sex
             runner["birth_year"] = birth_year
 
