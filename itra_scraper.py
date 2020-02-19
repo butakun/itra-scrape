@@ -101,7 +101,6 @@ class ITRAScraper(object):
             runner = {"id": fc["id"], "data-url": fc["data-url"]}
 
             tit = fc.find("div", class_="tit").get_text()
-            print(tit)
             try:
                 groups = pat_tit_1.search(tit).groups()
                 sex, birth_year = groups[:2]
