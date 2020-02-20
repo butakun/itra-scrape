@@ -14,10 +14,8 @@ def main(username, password, first_name, family_name, nationality, filename, deb
     itra = itra_scraper.scraper(username, password, debug)
 
     runners = itra.search_runners(first_name, family_name, nationality)
-
-    for runner in runners:
-        print(runner)
     assert len(runners) > 0
+
     writer = csv.DictWriter(output, fieldnames=runners[0].keys())
     writer.writeheader()
     for runner in runners:
@@ -27,10 +25,10 @@ def main(username, password, first_name, family_name, nationality, filename, deb
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--username")
-    parser.add_argument("--password")
-    parser.add_argument("--output", default=None, help="output csv file name")
-    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("-u", "--username")
+    parser.add_argument("-p", "--password")
+    parser.add_argument("-o", "--output", default=None, help="output csv file name")
+    parser.add_argument("-d", "--debug", action="store_true")
     parser.add_argument("first_name")
     parser.add_argument("family_name")
     parser.add_argument("nationality")

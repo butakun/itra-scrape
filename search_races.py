@@ -24,11 +24,11 @@ def main(username, password, from_date, to_date, keyword, filename, debug):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--username")
-    parser.add_argument("--password")
-    parser.add_argument("--output", default=None, help="output csv file name")
-    parser.add_argument("--keyword", default=None, help="keyword for race name")
-    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("-u", "--username")
+    parser.add_argument("-p", "--password")
+    parser.add_argument("-o", "--output", default=None, help="output csv file name")
+    parser.add_argument("-k", "--keyword", default=None, help="keyword for race name")
+    parser.add_argument("-d", "--debug", action="store_true")
     parser.add_argument("from_date", help="DD/MM/YYYY")
     parser.add_argument("to_date", help="DD/MM/YYYY")
     args = parser.parse_args()
