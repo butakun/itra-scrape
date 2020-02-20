@@ -6,7 +6,7 @@ Scraping Tool for ITRA Database
 
 e.g.
 ```
-$ python ./search_races.py --username YourITRAUserName --password Password 01/01/2020 29/02/2020
+$ python ./search_races.py 01/01/2020 29/02/2020
 
 idedition,name,where,when,info
 49703,Trilhas Ninho Das Águias - 2 Etapa C T M 2020 - 19K Trilhas Ninho Das Águias,Brazil - Rio Grande do Sul,15 February 2020,18.9km 1180M+
