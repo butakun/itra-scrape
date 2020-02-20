@@ -48,29 +48,51 @@ class ITRAScraper(object):
         if keyword is not None:
             data["input_cal_rech"] = keyword
 
-        r = self.session.post("https://itra.run/results.php", data=data)
-        r.raise_for_status()
-
-        soup = BeautifulSoup(r.text, features="html.parser")
         races = []
-        ref = re.compile("^.*getResult\('([0-9]+)'\);.*$")
-        for race in soup.select("div.race"):
-            name = race.find("h2").get_text().strip()
-            idedition = ref.search(race.find("a").attrs["onclick"]).group(1)
 
-            where, when = race.find_all("div")[:2]
-            where = where.get_text().strip()
-            info = when.span.extract().get_text().strip()
-            when = when.get_text().strip()
-            races.append(
-                {
-                    "idedition": idedition,
-                    "name": name,
-                    "where": where,
-                    "when": when,
-                    "info": info,
-                }
-            )
+        nbp, nbpmax = 1, 1
+
+        while nbp <= nbpmax:
+
+            if nbp > 1:
+                data["num_page"] = nbp
+
+            r = self.session.post("https://itra.run/results.php", data=data)
+            r.raise_for_status()
+
+            if self.debug:
+                sys.stderr.write(r.text)
+
+            soup = BeautifulSoup(r.text, features="html.parser")
+
+            if nbp == 1:
+                script_text = soup.find("script").get_text()
+                # the number of races
+                nb_res = int(re.search('"#nb_res"\).html\("([0-9]+)', script_text).group(1))
+                # the number of pages
+                nbpmax = int(re.search('"#nbpmax"\).html\("([0-9]+)', script_text).group(1))
+
+            ref = re.compile("^.*getResult\('([0-9]+)'\);.*$")
+            for race in soup.select("div.race"):
+                name = race.find("h2").get_text().strip()
+                idedition = ref.search(race.find("a").attrs["onclick"]).group(1)
+
+                where, when = race.find_all("div")[:2]
+                where = where.get_text().strip()
+                info = when.span.extract().get_text().strip()
+                when = when.get_text().strip()
+                races.append(
+                    {
+                        "idedition": idedition,
+                        "name": name,
+                        "where": where,
+                        "when": when,
+                        "info": info,
+                    }
+                )
+
+            nbp += 1
+
         return races
 
     def search_runners(self, first_name, family_name, nationality):
